@@ -18,7 +18,7 @@ end
 
 local cache = {}
 local function addcache(datas)
-	if #cache>15 then
+	if #cache>20 then
 		local dat = cache[1]
 		table.remove(cache,1)
 		expire(dat)
@@ -76,7 +76,7 @@ require("os")
 require("io")
 posix = require("posix")
 
-dofile "pipe.lua"
+dofile"pipe.lua"
 
 
 local socket=require"socket"
@@ -146,7 +146,6 @@ function main(env, con)
 	local lpid2, lstdin_fd2, lstdout_fd2, lstderr_fd2 = popen3p(pipes,'/usr/bin/oggenc','-Q','--','-')
 
 	
-	--posix.close(lstdout_fd)
 	--posix.close(pipes.stdout_w)
 	posix.close(pipes.stderr_w)
 	
@@ -166,31 +165,40 @@ function main(env, con)
 	--	error(err or "TOOBIG?!?")
 	--end
 	
+	
 	errstr, err = posix.read(lstderr_fd, 1024^2)
+	posix.close(lstderr_fd)
 	if errstr and #errstr>0 then
+		posix.close(lstdout_fd)
 		error(errstr)
 	end
 	
+	
 	errstr, err = posix.read(lstderr_fd2, 1024^2)
+	posix.close(lstderr_fd2)
 	if errstr and #errstr>0 then
+		posix.close(lstdout_fd)
 		error(errstr)
 	end
+	
 	
 	local pid, reason, status = posix.wait(lpid)
 	
-	if not status then 
+	if not status then
+		posix.close(lstdout_fd)
 		error(reason)
 	end
 	local pid, reason, status = posix.wait(lpid2)
 	
 	if not status then 
+		posix.close(lstdout_fd)
 		error(reason)
 	end
+	posix.close(lstdout_fd)
 	
 	entry_tmp.fd = fd
 	addcache(entry_tmp)
 
-	
 	serve_ogg(con,fd)
 	
 	local sz = fd:seek("end")

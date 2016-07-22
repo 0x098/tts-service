@@ -36,15 +36,18 @@ end
 
 function popen3p(pipes,path, ...)
 	
-	if not pipes.stdin_r then
-		pipes.stdin_r,  pipes.stdin_w   = posix.pipe()
-	end
-	if not pipes.stdout_w then
-		pipes.stdout_r, pipes.stdout_w = posix.pipe()
-	end
-	if not pipes.stderr_w then
-		pipes.stderr_r, pipes.stderr_w = posix.pipe()
-	end
+	--if not pipes.stdin_r then
+	--	pipes.stdin_r,  pipes.stdin_w   = posix.pipe()
+	--end
+	--if not pipes.stdout_w then
+	--	pipes.stdout_r, pipes.stdout_w = posix.pipe()
+	--end
+	--if not pipes.stderr_w then
+	--	pipes.stderr_r, pipes.stderr_w = posix.pipe()
+	--end
+	assert(pipes.stdin_r)
+	assert(pipes.stdout_w)
+	assert(pipes.stderr_w)
 	
 	local stdin_r, stdin_w   = pipes.stdin_r,  pipes.stdin_w   
 	local stdout_r, stdout_w = pipes.stdout_r, pipes.stdout_w 
@@ -69,5 +72,9 @@ function popen3p(pipes,path, ...)
 		return
 	end
 
+	if pipes.stdin_r  then posix.close(pipes.stdin_r ) end
+	if pipes.stdout_w then posix.close(pipes.stdout_w) end
+	if pipes.stderr_w then posix.close(pipes.stderr_w) end
+	
 	return pid, stdin_w, stdout_r, stderr_r
 end
