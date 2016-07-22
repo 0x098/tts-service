@@ -72,9 +72,9 @@ function popen3p(pipes,path, ...)
 		return
 	end
 
-	if pipes.stdin_r  then posix.close(pipes.stdin_r ) end
-	if pipes.stdout_w then posix.close(pipes.stdout_w) end
-	if pipes.stderr_w then posix.close(pipes.stderr_w) end
+	--if pipes.stdin_r  then posix.close(pipes.stdin_r ) end
+	--if pipes.stdout_w then posix.close(pipes.stdout_w) end
+	--if pipes.stderr_w then posix.close(pipes.stderr_w) end
 	
 	return pid, stdin_w, stdout_r, stderr_r
 end
